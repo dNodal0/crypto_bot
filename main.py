@@ -5,6 +5,21 @@ from utils.logger import log_trade
 from utils.notifier import send_discord_notification
 from exchanges.binance_api import BinanceAPI
 from strategies.moving_average import MovingAverageStrategy
+from utils.config_loader import load_config, load_pairs
+
+# Charger la configuration dynamique
+config = load_config()
+trading_pairs = load_pairs()
+print(f"Paires de trading : {trading_pairs}")
+
+# Utiliser les informations d'échange
+binance_config = config["exchanges"]["binance"]
+print("Binance API Key:", binance_config["api_key"])
+print("Binance API Secret:", binance_config["api_secret"])
+
+# Exemple d'intégration
+from exchanges.binance_api import BinanceAPI
+binance = BinanceAPI(binance_config)
 
 def main():
     # Charger la configuration
