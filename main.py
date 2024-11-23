@@ -56,6 +56,7 @@ def main():
                             send_discord_notification(trade_result)
                         else:
                             print(f"Test Mode Signal pour {pair} : {signal}")
+                            log_trade({"signal": signal}, "./logs/trade_logs.json")  # Log de test
                 else:
                     print("Limite de trades ouverts atteinte")
 
