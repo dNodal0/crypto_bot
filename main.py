@@ -2,6 +2,7 @@
 import time
 from utils.config_loader import load_config
 from utils.logger import log_trade
+from utils.logger import log_error
 from utils.notifier import send_discord_notification
 from exchanges.binance_api import BinanceAPI
 from strategies.moving_average import MovingAverageStrategy
@@ -39,7 +40,6 @@ def main():
         try:
             # Obtenir les données de marché
             market_data = binance.get_market_data()
-
             # Appliquer la stratégie
             signals = strategy.generate_signals(market_data)
 
@@ -54,8 +54,10 @@ def main():
 
             time.sleep(60)  # Rafraîchir toutes les minutes
         except Exception as e:
-            print(f"Erreur: {e}")
-            time.sleep(60)
+            # print(f"Erreur: {e}")
+            # time.sleep(60)
+            print(f"Erreur dans la fonction principale : {e}")
+            log_error(e, "./logs/error_logs.json")
 
 if __name__ == "__main__":
     main()
