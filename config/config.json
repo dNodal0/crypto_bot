@@ -1,8 +1,8 @@
 {
-    "mode": "test",
+    "mode": "reel",
     "exchanges": {
         "binance": {
-            "use_testnet": true
+            "use_testnet": false
         },
         "bitmart": {},
         "bybit": {}
@@ -11,7 +11,9 @@
         "risk_per_trade": 0.01,
         "max_open_trades": 5,
         "account_balance": 1000,
-        "stop_loss_distance": 0.02
+        "stop_loss_distance": 0.02,
+        "leverage": 2,
+        "isolated_futures": true
     },
     "discord": {
         "webhook_url": "${DISCORD_WEBHOOK_URL}"

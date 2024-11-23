@@ -11,13 +11,13 @@ class BinanceAPI:
     def get_market_data(self, symbol):
         return self.client.get_symbol_ticker(symbol=symbol)
 
-    def place_order(self, symbol, side, quantity, order_type="MARKET"):
-        return self.client.create_order(
-            symbol=symbol,
-            side=side,
-            type=order_type,
-            quantity=quantity
-        )
+    def place_order(self, symbol, side, quantity, order_type="MARKET", leverage=2, isolated=True):
+    # Set leverage for isolated margin
+        self.client.futures_change_leverage(symbol=symbol, leverage=leverage)
+        if isolated:
+            self.client.futures_create_order(symbol=symbol, side=side, type=order_type, quantity=quantity, positionSide='BOTH')
+        else:
+            self.client.futures_create_order(symbol=symbol, side=side, type=order_type, quantity=quantity)
 
     def execute_trade(self, signal, symbol, quantity, order_type="MARKET"):
         """
