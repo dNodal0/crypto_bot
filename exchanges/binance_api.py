@@ -1,4 +1,3 @@
-# binance_api.py
 from binance.client import Client
 
 class BinanceAPI:
@@ -7,12 +6,24 @@ class BinanceAPI:
         self.use_testnet = config.get("use_testnet", False)
         if self.use_testnet:
             self.client.API_URL = "https://testnet.binance.vision/api"
-
-    def get_market_data(self, symbol):
-        return self.client.get_symbol_ticker(symbol=symbol)
+    
+    def get_all_market_data(self):
+        """
+        Récupère les données de marché pour toutes les paires disponibles.
+        :return: Dictionnaire des données de marché par symbole
+        """
+        try:
+            response = self.client.get_all_tickers()  # API Binance
+            if not response:
+                print("Erreur : aucune donnée de marché récupérée.")
+                return {}
+            return {item['symbol']: {"price": float(item['price'])} for item in response}
+        except Exception as e:
+            print(f"Erreur lors de la récupération des données de marché : {e}")
+            return {}
 
     def place_order(self, symbol, side, quantity, order_type="MARKET", leverage=2, isolated=True):
-    # Set leverage for isolated margin
+        # Set leverage for isolated margin
         self.client.futures_change_leverage(symbol=symbol, leverage=leverage)
         if isolated:
             self.client.futures_create_order(symbol=symbol, side=side, type=order_type, quantity=quantity, positionSide='BOTH')

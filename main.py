@@ -20,14 +20,30 @@ leverage = config["trade_settings"]["leverage"]
 
 # Utiliser les informations d'échange
 binance_config = config["exchanges"]["binance"]
-# print("Binance API Key:", binance_config["api_key"])
-# print("Binance API Secret:", binance_config["api_secret"])
 
 # Initialiser la gestion du risque avec la configuration complète
 risk_management = RiskManagement(config["trade_settings"])
 
 # Initialiser l'API Binance
 binance = BinanceAPI(binance_config)
+
+market_cache = {}
+cache_expiry = 60  # Durée de validité du cache en secondes
+
+def get_cached_market_data(exchange):
+    global market_cache
+    current_time = time.time()
+
+    # Vérifier si le cache est valide
+    if "data" in market_cache and current_time - market_cache["timestamp"] < cache_expiry:
+        print("Utilisation des données mises en cache.")
+        return market_cache["data"]
+
+    # Sinon, récupérer de nouvelles données
+    print("Récupération des nouvelles données de marché.")
+    data = exchange.get_all_market_data()  # Récupérer toutes les données de marché
+    market_cache = {"data": data, "timestamp": current_time}  # Mise à jour du cache
+    return data
 
 def get_exchange_from_args():
     parser = argparse.ArgumentParser(description="Choisir l'échange pour le trading")
@@ -50,14 +66,21 @@ def main():
 
     while True:
         try:
+            # Récupération optimisée des données de marché
+            market_data = get_cached_market_data(exchange)  # Toutes les paires en une seule requête
+
             for pair in trading_pairs:
-                # Obtenir les données de marché pour chaque paire
-                market_data = exchange.get_market_data(pair)
-                print(f"Données de marché pour {pair} : {market_data}")
+                pair_data = market_data.get(pair)  # Utilisation sécurisée avec `.get()`
+                if not pair_data:
+                    print(f"Données indisponibles ou invalides pour {pair}.")
+                    continue
+
+                print(f"Données de marché pour {pair} : {pair_data}")
+                # Appliquer les stratégies et poursuivre
 
                 # Appliquer la stratégie
                 strategy = MovingAverageStrategy()
-                signals = strategy.generate_signals(market_data)
+                signals = strategy.generate_signals(pair_data)
 
                 # Calcul de la taille de la position
                 account_balance = config["trade_settings"]["account_balance"]
@@ -82,6 +105,7 @@ def main():
         except Exception as e:
             print(f"Erreur dans la fonction principale : {e}")
             log_error(e, "./logs/error_logs.json")
+
 
 if __name__ == "__main__":
     main()
