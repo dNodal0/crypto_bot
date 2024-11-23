@@ -1,4 +1,4 @@
-# Python file placeholder
+# binance_api.py
 from binance.client import Client
 
 class BinanceAPI:
@@ -18,3 +18,15 @@ class BinanceAPI:
             type=order_type,
             quantity=quantity
         )
+
+    def execute_trade(self, signal, symbol, quantity, order_type="MARKET"):
+        """
+        Exécute un trade basé sur le signal.
+        :param signal: 'buy' ou 'sell'
+        :param symbol: Paire de trading (ex: 'BTCUSDT')
+        :param quantity: Quantité à trader
+        :param order_type: Type d'ordre (par défaut "MARKET")
+        :return: Résultat de l'exécution de l'ordre
+        """
+        side = "BUY" if signal == "buy" else "SELL"
+        return self.place_order(symbol, side, quantity, order_type)

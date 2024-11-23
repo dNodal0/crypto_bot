@@ -7,17 +7,16 @@
         "bitmart": {},
         "bybit": {}
     },
-    "trading_pairs": ["BTCUSDT", "ETHUSDT", "SOLUSDT"],
     "trade_settings": {
         "risk_per_trade": 0.01,
-        "max_open_trades": 5
+        "max_open_trades": 5,
+        "account_balance": 1000,
+        "stop_loss_distance": 0.02
     },
     "discord": {
         "webhook_url": "${DISCORD_WEBHOOK_URL}"
     }
 }
-        
-        
         
         
         
